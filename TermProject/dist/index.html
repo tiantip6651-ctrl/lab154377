@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="สำรวจพื้นที่สีเขียวและค้นหาเส้นทางเดินในอำเภอเมืองเชียงใหม่">
+    <title>VERDANT | Chiang Mai Green Explorer</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script type="module" crossorigin src="/lab154377/TermProject/assets/index-D1P37LiN.js"></script>
+  <link rel="stylesheet" crossorigin href="/lab154377/TermProject/assets/index-C1NqrVLd.css">
+</head>
+
+<body>
+    <div class="app-shell">
+
+        <aside class="sidebar">
+            <header class="brand">
+                <div class="brand-mark">V.</div>
+                <div>
+                    <h1>VERDANT</h1>
+                    <p>CHIANG MAI GREEN EXPLORER</p>
+                </div>
+            </header>
+
+            <section class="intro">
+                <span class="eyebrow">URBAN NATURE</span>
+                <h2>Find your<br><span>green escape.</span></h2>
+                <p>ค้นหาพื้นที่สีเขียวและวางแผนเดินทางไปสวนในอำเภอเมืองเชียงใหม่</p>
+            </section>
+
+            <section class="panel">
+                <div class="section-heading">
+                    <span class="section-number">01</span>
+                    <h3>สำรวจพื้นที่สีเขียว</h3>
+                </div>
+
+                <label for="parkSearch">ค้นหาจากข้อมูลสวนเดิม</label>
+                <input id="parkSearch" type="search" placeholder="พิมพ์ชื่อสวน..." autocomplete="off">
+
+                <label for="parkSelect">เลือกสวนจากรายการ</label>
+                <select id="parkSelect">
+                    <option value="">กำลังโหลดข้อมูลสวน...</option>
+                </select>
+
+                <div id="selectedInfo" class="selected-info">
+                    เลือกสวนเพื่อดูตำแหน่งบนแผนที่
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="section-heading">
+                    <span class="section-number">02</span>
+                    <h3>ค้นหาสวนเพิ่มเติม</h3>
+                </div>
+
+                <p class="helper-text">
+                    ค้นหาพื้นที่สีเขียวเพิ่มเติมจาก OpenStreetMap ภายในอำเภอเมืองเชียงใหม่
+                </p>
+
+                <div class="search-row">
+                    <input id="externalParkSearch" type="search" placeholder="เช่น สวนสาธารณะ..." autocomplete="off">
+                    <button id="externalSearchBtn" type="button">ค้นหา</button>
+                </div>
+
+                <div id="externalSearchResults" class="search-results"></div>
+
+                <p class="map-data-credit">
+                    Search data:
+                    <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">
+                        © OpenStreetMap contributors
+                    </a>
+                </p>
+            </section>
+
+            <section class="panel">
+                <div class="section-heading">
+                    <span class="section-number">03</span>
+                    <h3>เส้นทางเดิน</h3>
+                </div>
+
+                <button id="locateBtn" class="primary-button" type="button">
+                    <span>◎</span> ใช้ตำแหน่งปัจจุบันของฉัน
+                </button>
+
+                <button id="routeBtn" class="secondary-button" type="button">
+                    <span>↗</span> คำนวณเส้นทางเดิน
+                </button>
+
+                <div id="routeSummary" class="route-summary" hidden>
+                    <div class="route-summary-heading">
+                        <span class="route-icon">↗</span>
+                        <div>
+                            <strong>เส้นทางเดินของคุณ</strong>
+                            <p id="routeDestination">จุดหมายที่เลือก</p>
+                        </div>
+                    </div>
+
+                    <div class="route-metrics">
+                        <div class="route-metric">
+                            <span class="metric-icon">↔</span>
+                            <span class="metric-label">ระยะทาง</span>
+                            <strong id="routeDistance">— กม.</strong>
+                        </div>
+
+                        <div class="route-metric">
+                            <span class="metric-icon">◷</span>
+                            <span class="metric-label">เวลาเดิน</span>
+                            <strong id="routeDuration">— นาที</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="helper-text location-help">
+                    อนุญาตให้เบราว์เซอร์เข้าถึงตำแหน่งของคุณก่อนคำนวณเส้นทาง
+                </p>
+            </section>
+
+            <section class="panel layer-panel">
+                <div class="section-heading">
+                    <span class="section-number">04</span>
+                    <h3>ชั้นข้อมูลแผนที่</h3>
+                </div>
+
+                <label class="layer-option">
+                    <span class="layer-symbol park-symbol"></span>
+                    <span>พื้นที่สีเขียว</span>
+                    <input id="toggleParks" type="checkbox" checked>
+                </label>
+
+                <label class="layer-option">
+                    <span class="layer-symbol boundary-symbol"></span>
+                    <span>ขอบเขตอำเภอ</span>
+                    <input id="toggleBoundary" type="checkbox" checked>
+                </label>
+            </section>
+
+            <footer class="sidebar-footer">
+                <span class="footer-dot"></span>
+                <span>GREEN SPACES · MUEANG CHIANG MAI</span>
+            </footer>
+        </aside>
+
+        <main class="map-panel">
+            <header class="map-topbar">
+                <div>
+                    <span class="map-kicker">EXPLORE THE CITY</span>
+                    <h2>Chiang Mai <span>Green Map</span></h2>
+                </div>
+
+                <div class="map-badge">
+                    <span class="live-dot"></span>
+                    INTERACTIVE MAP
+                </div>
+            </header>
+
+            <div id="map"></div>
+
+            <div class="map-legend">
+                <div class="legend-item">
+                    <span class="legend-dot"></span>
+                    <span>พื้นที่สีเขียว</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-line"></span>
+                    <span>เส้นทางเดิน</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-outline"></span>
+                    <span>ขอบเขตอำเภอ</span>
+                </div>
+            </div>
+
+            <div id="status" class="status-bar" role="status" aria-live="polite">
+                กำลังเตรียมแผนที่...
+            </div>
+
+            <div class="map-attribution">
+                Map data ©
+                <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">
+                    OpenStreetMap contributors
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <!-- หน้าต่างระบุตำแหน่ง -->
+    <div id="locationModal" class="modal-overlay" hidden>
+        <div class="location-modal" role="dialog" aria-modal="true" aria-labelledby="locationModalTitle">
+            <div class="location-animation">
+                <div class="location-pulse"></div>
+                <div class="location-pin">⌖</div>
+            </div>
+
+            <h2 id="locationModalTitle">กำลังค้นหาตำแหน่งของคุณ</h2>
+
+            <p id="locationModalMessage">
+                กรุณารอสักครู่ และอนุญาตให้เบราว์เซอร์เข้าถึงตำแหน่งของคุณ
+            </p>
+
+            <div id="locationLoadingTrack" class="loading-track">
+                <div class="loading-progress"></div>
+            </div>
+
+            <button id="closeLocationModal" class="modal-close-button" type="button" hidden>
+                ปิดหน้าต่าง
+            </button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</body>
+
+</html>
